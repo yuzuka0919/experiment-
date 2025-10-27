@@ -65,7 +65,7 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 <body>
 <div class="card">
   <h2 id="question">読み込み中...</h2>
-  <div id="timerDisplay">残り時間: 30 秒</div>
+  <div id="timerDisplay">残り時間: 600 秒</div>
 
   <label for="memoCanvas">🖊 メモ欄（手書き）</label>
   <canvas id="memoCanvas"></canvas><br>
@@ -91,7 +91,6 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 
 <div id="feelingPopup">
   <p>今の気分はどのあたりですか？</p>
-  <div id="countdownDisplay" style="font-weight:bold; color:red; margin-bottom:10px;"></div>
   <input type="range" id="feelingSlider" min="0" max="100" step="1">
   <br><span style="float:left">解けそう</span>
   <span style="float:right">解けなそう</span>
@@ -103,100 +102,107 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 // ---------------------
 // クイズ
 // ---------------------
-const quiz = [ 
-{ qHTML: 以下のカントの文章を読み、問いに答えよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz5.png" style="display:block; margin:10px 0;" width="600"> 理性による「対象から主体への転回」をカントは何と呼んだか。, a: "50" }, 
-{ qHTML: 以下のカントの文章を読み、問いに答えよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz5.png" style="display:block; margin:10px 0;" width="600"> 経験に先立つ感性の形式は何か？, a: "50" }, 
-{ qHTML: 以下のカントの文章を読み、問いに答えよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz5.png" style="display:block; margin:10px 0;" width="600"> 現象を統一して経験を可能にする概念群は？, a: "50" }, 
-{ qHTML: 以下のカントの文章を読み、問いに答えよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz5.png" style="display:block; margin:10px 0;" width="600"> 理性が自らの限界を完全に理解することは可能か？, a: "50" }, 
-{ qHTML: lとmは平行である。以下のxを求めよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz1.png" style="display:block; margin:10px 0;" width="200">, a: "50" }, 
-{ qHTML: lとmは平行である。以下のxを求めよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz2.png" style="display:block; margin:10px 0;" width="200">, a: "50" }, 
-{ qHTML: 以下のxを求めよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz3.png" style="display:block; margin:10px 0;" width="200">, a: "50" }, 
-{ qHTML: 以下のxを求めよ。<br><img src="https://yuzuka0919.github.io/experiment-/images/quiz4.png" style="display:block; margin:10px 0;" width="200">, a: "50" }, 
-{ qHTML: "ギリギリの時間に鬼が食べそうなものは何？", a: "おにぎり" }, 
-{ qHTML: "豚が寝る場所はどこ？", a: "3" }, 
-{ qHTML: "あっという間に10歳になったらどんな動物になりそう？", a: "猛獣" }, 
-{ qHTML: "事故があると震えてしまう植物ってなんだ？", a: "解答なし" }, 
+const quiz = [
+  { qHTML: "以下のカントの文章を読み、問いに答えよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz5.png' style='display:block; margin:10px 0;' width='600'> 理性による「対象から主体への転回」をカントは何と呼んだか。", a: "50" },
+  { qHTML: "以下のカントの文章を読み、問いに答えよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz5.png' style='display:block; margin:10px 0;' width='600'> 経験に先立つ感性の形式は何か？", a: "50" },
+  { qHTML: "以下のカントの文章を読み、問いに答えよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz5.png' style='display:block; margin:10px 0;' width='600'> 現象を統一して経験を可能にする概念群は？", a: "50" },
+  { qHTML: "以下のカントの文章を読み、問いに答えよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz5.png' style='display:block; margin:10px 0;' width='600'> 理性が自らの限界を完全に理解することは可能か？", a: "50" },
+  { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz1.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz2.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz3.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz4.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "ギリギリの時間に鬼が食べそうなものは何？", a: "おにぎり" },
+  { qHTML: "豚が寝る場所はどこ？", a: "3" },
+  { qHTML: "あっという間に10歳になったらどんな動物になりそう？", a: "猛獣" },
+  { qHTML: "事故があると震えてしまう植物ってなんだ？", a: "解答なし" },
 ];
 
 let current = 0;
 let attributionLog = [];
 let feelingLog = [];
-let timeLeft = 30;
-let quizTimer;
+let timer;
 
 // ---------------------
 // クイズ表示
 // ---------------------
 function showQuestion() {
-  if(current >= quiz.length) {
-    document.getElementById("question").innerText = "すべての問題が終了しました";
-    document.getElementById("timerDisplay").innerText = "";
-    return;
-  }
-  document.getElementById("question").innerHTML = quiz[current].qHTML;
-  document.getElementById("answer").value = "";
-  clearCanvas();
-  document.getElementById("attribution").style.display = "none";
-  document.getElementById("thankMessage").innerText = "";
-  timeLeft = 30;
-  document.getElementById("timerDisplay").innerText = `残り時間: ${timeLeft} 秒`;
-}
+  if (current >= quiz.length) {
+    endExperiment();
+  } else {
+    document.getElementById("question").innerHTML = quiz[current].qHTML;
+    document.getElementById("answer").value = "";
+    clearCanvas();
+    document.getElementById("attribution").style.display = "none";
+    document.getElementById("thankMessage").innerText = "";
 
-// ---------------------
-// タイマー
-// ---------------------
-function startTimer() {
-  quizTimer = setInterval(()=>{
-    timeLeft--;
-    document.getElementById("timerDisplay").innerText = `残り時間: ${timeLeft} 秒`;
-    if(timeLeft <= 0){
-      clearInterval(quizTimer);
-      showAttributionOptions(); // 時間切れで自動で諦める
-    }
-  },1000);
+    document.getElementById("answer").style.display = "block";
+    document.getElementById("memoCanvas").style.display = "block";
+    document.querySelector("label").style.display = "block";
+    document.querySelector("button[onclick='clearCanvas()']").style.display = "inline-block";
+    document.getElementById("submitBtn").style.display = "inline-block";
+    document.getElementById("giveUpBtn").style.display = "inline-block";
+  }
 }
 
 // ---------------------
 // 解答
 // ---------------------
-function submitAnswer(){
-  const timestamp = new Date().toLocaleString();
+function submitAnswer() {
   const answer = document.getElementById("answer").value;
-  attributionLog.push({ question: quiz[current].qHTML, attribution: answer, timestamp });
+  const time = new Date().toLocaleString();
+  attributionLog.push({
+    question: quiz[current].qHTML,
+    attribution: answer,
+    timestamp: time
+  });
   current++;
-  clearInterval(quizTimer);
   showQuestion();
-  startTimer();
 }
 
 // ---------------------
 // 諦め
 // ---------------------
-function showAttributionOptions(){ document.getElementById("attribution").style.display = "flex"; }
-function selectAttribution(reason){
-  const timestamp = new Date().toLocaleString();
-  attributionLog.push({ question: quiz[current].qHTML, attribution: reason, timestamp });
+function showAttributionOptions() {
+  document.getElementById("attribution").style.display = "flex";
+}
+
+function selectAttribution(reason) {
+  const time = new Date().toLocaleString();
+  attributionLog.push({
+    question: quiz[current].qHTML,
+    attribution: reason,
+    timestamp: time
+  });
   current++;
-  clearInterval(quizTimer);
   showQuestion();
-  startTimer();
 }
 
 // ---------------------
 // CSVダウンロード
 // ---------------------
-function showDownloadLink(){
-  const rows = [["問題","回答/帰属理由","時間"]];
-  attributionLog.forEach(e=>rows.push([e.question.replace(/<[^>]+>/g,""), e.attribution, e.timestamp]));
-  const csvContent = rows.map(r=>r.join(",")).join("\n");
-  const blob = new Blob(["\uFEFF"+csvContent], {type:"text/csv;charset=utf-8;"});
+function showDownloadLink() {
+  const rows = [["問題", "帰属理由", "時間"]];
+  attributionLog.forEach(entry => rows.push([entry.question, entry.attribution, entry.timestamp]));
+  rows.push(["", "", ""]);
+  rows.push(["タイミング", "気分スライダー値"]);
+  feelingLog.forEach(entry => rows.push([entry.timestamp, entry.value]));
+
+  const csvContent = rows.map(row => row.join(",")).join("\n");
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
+  link.href = url;
   link.download = "experiment_log.csv";
-  link.innerText = "回答内容をCSVでダウンロード";
-  const downloadDiv = document.getElementById("download");
-  downloadDiv.innerHTML = "";
-  downloadDiv.appendChild(link);
+  link.innerText = "帰属理由をCSVでダウンロード";
+  link.style.display = "inline-block";
+  link.style.marginTop = "10px";
+  link.style.fontWeight = "bold";
+
+  const container = document.getElementById("download");
+  container.innerHTML = "";
+  container.appendChild(link);
 }
 
 // ---------------------
@@ -228,4 +234,72 @@ canvas.addEventListener("touchstart", e=>{
   canvas.dispatchEvent(new MouseEvent("mousedown",{clientX:t.clientX, clientY:t.clientY}));
 },{passive:false});
 canvas.addEventListener("touchmove", e=>{
- 
+  e.preventDefault();
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent("mousemove",{clientX:t.clientX, clientY:t.clientY}));
+},{passive:false});
+canvas.addEventListener("touchend", e=>{
+  canvas.dispatchEvent(new MouseEvent("mouseup"));
+},{passive:false});
+
+// ---------------------
+// 気分ポップアップ
+// ---------------------
+function openFeelingPopup() {
+  const popup = document.getElementById("feelingPopup");
+  popup.style.display = "block";
+  setTimeout(closeFeelingPopup, 7000);
+}
+
+function closeFeelingPopup() {
+  const popup = document.getElementById("feelingPopup");
+  if(popup.style.display==="none") return;
+  const value = document.getElementById("feelingSlider").value;
+  const timestamp = new Date().toLocaleString();
+  feelingLog.push({ timestamp, value });
+  popup.style.display = "none";
+}
+
+// ---------------------
+// タイマー
+// ---------------------
+function startTimer() {
+  let timeLeft = 600; // 10分
+  const timerDisplay = document.getElementById("timerDisplay");
+  timer = setInterval(() => {
+    timeLeft--;
+    timerDisplay.innerText = `残り時間: ${timeLeft}秒`;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      endExperiment();
+    }
+  }, 1000);
+}
+
+// ---------------------
+// 終了処理
+// ---------------------
+function endExperiment() {
+  current = quiz.length;
+  document.getElementById("question").innerText = "すべての問題が終わりました！";
+  document.getElementById("answer").style.display = "none";
+  document.getElementById("memoCanvas").style.display = "none";
+  document.querySelector("label").style.display = "none";
+  document.querySelector("button[onclick='clearCanvas()']").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("giveUpBtn").style.display = "none";
+  document.getElementById("attribution").style.display = "none";
+  document.getElementById("thankMessage").innerText = "実験にご協力いただきありがとうございました";
+  document.getElementById("timerDisplay").style.display = "none";
+  showDownloadLink();
+}
+
+// ---------------------
+// 初期化
+// ---------------------
+showQuestion();
+startTimer();
+setInterval(openFeelingPopup, 10000);
+</script>
+</body>
+</html>
