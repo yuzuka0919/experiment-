@@ -28,7 +28,6 @@
     background: #fff;
     touch-action: none;
     width: 100%;
-    height: 250px;
   }
   button {
     margin: 10px 5px 0;
@@ -101,19 +100,19 @@
 </div>
 
 <script>
-// GitHub Pages 用に basePath を定義（images フォルダが同階層にある場合）
+// GitHub Pages 用 basePath
 const basePath = "images/";
 
 // クイズ一覧
 const quiz = [
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600"> 理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600"> 経験に先立つ感性の形式は何か？`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600"> 現象を統一して経験を可能にする概念群は？`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600"> 理性が自らの限界を完全に理解することは可能か？`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz1.png" width="200">`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz2.png" width="200">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz3.png" width="200">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz4.png" width="200">`, a: "50" },
+  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
+  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">経験に先立つ感性の形式は何か？`, a: "50" },
+  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">現象を統一して経験を可能にする概念群は？`, a: "50" },
+  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">理性が自らの限界を完全に理解することは可能か？`, a: "50" },
+  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz1.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
+  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz2.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
+  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz3.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
+  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz4.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
   { qHTML: "ギリギリの時間に鬼が食べそうなものは何？", a: "おにぎり" },
   { qHTML: "豚が寝る場所はどこ？", a: "3" },
   { qHTML: "あっという間に10歳になったらどんな動物になりそう？", a: "猛獣" },
@@ -123,11 +122,10 @@ const quiz = [
 let current = 0;
 let attributionLog = [];
 let feelingLog = [];
-let timer;
 
 // クイズ表示
 function showQuestion() {
-  if(current >= quiz.length) return; // 終了処理追加したい場合ここで
+  if(current >= quiz.length) return;
   document.getElementById("question").innerHTML = quiz[current].qHTML;
   document.getElementById("answer").value = "";
   clearCanvas();
@@ -172,7 +170,23 @@ const canvas = document.getElementById("memoCanvas");
 const ctx = canvas.getContext("2d");
 let drawing = false;
 
-function getMousePos(evt){ const rect = canvas.getBoundingClientRect(); return { x: evt.clientX - rect.left, y: evt.clientY - rect.top }; }
+// Canvasサイズ固定
+canvas.width = canvas.offsetWidth;
+canvas.height = 250;
+
+function getMousePos(evt){
+  const rect = canvas.getBoundingClientRect();
+  let x, y;
+  if(evt.touches){
+    x = evt.touches[0].clientX - rect.left;
+    y = evt.touches[0].clientY - rect.top;
+  } else {
+    x = evt.clientX - rect.left;
+    y = evt.clientY - rect.top;
+  }
+  return { x, y };
+}
+
 function startDraw(evt){ drawing=true; const pos=getMousePos(evt); ctx.beginPath(); ctx.moveTo(pos.x,pos.y); }
 function draw(evt){ if(!drawing) return; const pos=getMousePos(evt); ctx.lineTo(pos.x,pos.y); ctx.stroke(); }
 function endDraw(){ drawing=false; }
@@ -185,19 +199,4 @@ canvas.addEventListener("mouseout", endDraw);
 canvas.addEventListener("touchstart", function(e){
   e.preventDefault();
   const touch = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent("mousedown", {clientX: touch.clientX, clientY: touch.clientY}));
-},{passive:false});
-canvas.addEventListener("touchmove", function(e){
-  e.preventDefault();
-  const touch = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent("mousemove",{clientX: touch.clientX, clientY: touch.clientY}));
-},{passive:false});
-canvas.addEventListener("touchend", function(e){
-  e.preventDefault();
-  canvas.dispatchEvent(new MouseEvent("mouseup",{}));
-});
-
-showQuestion();
-</script>
-</body>
-</html>
+  canvas.dispatchEvent(new MouseEvent("mousedown", {clientX: touch.clientX, clientY: touch.client
