@@ -212,6 +212,39 @@ canvas.addEventListener("touchend", e=>{
   canvas.dispatchEvent(new MouseEvent("mouseup",{}));
 });
 
+// 30秒ごとに feelingPopup を表示
+setInterval(() => {
+  const popup = document.getElementById("feelingPopup");
+  // 他のポップアップが開いていないときだけ表示
+  if (popup.style.display === "none") {
+    popup.style.display = "block";
+
+    // 30秒カウントダウン表示
+    let countdown = 30;
+    const countdownDisplay = document.getElementById("countdownDisplay");
+    countdownDisplay.innerText = `あと ${countdown} 秒`;
+    const timer = setInterval(() => {
+      countdown--;
+      countdownDisplay.innerText = `あと ${countdown} 秒`;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        popup.style.display = "none"; // 自動で閉じる
+      }
+    }, 1000);
+  }
+}, 30000); // 30000ms = 30秒
+
+// 閉じるボタン用関数
+function closeFeelingPopup() {
+  const popup = document.getElementById("feelingPopup");
+  popup.style.display = "none";
+
+  // スライダー値を取得してログに残す
+  const value = document.getElementById("feelingSlider").value;
+  const timestamp = new Date().toLocaleString();
+  feelingLog.push({ value, timestamp });
+}
+
 // 初期表示
 showQuestion();
 </script>
