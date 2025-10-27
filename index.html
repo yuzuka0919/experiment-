@@ -4,62 +4,62 @@
 <meta charset="UTF-8">
 <title>数学クイズ</title>
 <style>
-  body {
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f8ff;
-  }
-  .card {
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-align: center;
-    max-width: 95%;
-    width: 100%;
-  }
-  input { margin-top: 10px; padding: 8px; width: 100%; box-sizing: border-box; }
-  canvas {
-    border: 1px solid #ccc;
-    margin-top: 10px;
-    background: #fff;
-    touch-action: none;
-    width: 100%;
-  }
-  button {
-    margin: 10px 5px 0;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background-color: #4682b4;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover { background-color: #5a9bd4; }
-  #attribution { margin-top: 20px; display: none; flex-direction: column; }
-  #attribution button { background-color: white; color: #333; border: 1px solid #ccc; margin: 5px 0; }
-  #attribution button:hover { background-color: #f0f0f0; }
-  #download, #thankMessage, #timerDisplay { margin-top: 20px; }
-  label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
-  #feelingPopup {
-    display: none;
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 9999;
-    text-align: center;
-    width: 80%;
-    max-width: 500px;
-  }
-  #feelingPopup input[type=range] { width: 100%; }
+body {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f8ff;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 95%;
+  width: 100%;
+}
+input { margin-top: 10px; padding: 8px; width: 100%; box-sizing: border-box; }
+canvas {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  background: #fff;
+  touch-action: none;
+  width: 100%;
+}
+button {
+  margin: 10px 5px 0;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4682b4;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:hover { background-color: #5a9bd4; }
+#attribution { margin-top: 20px; display: none; flex-direction: column; }
+#attribution button { background-color: white; color: #333; border: 1px solid #ccc; margin: 5px 0; }
+#attribution button:hover { background-color: #f0f0f0; }
+#download, #thankMessage, #timerDisplay { margin-top: 20px; }
+label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
+#feelingPopup {
+  display: none;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+}
+#feelingPopup input[type=range] { width: 100%; }
 </style>
 </head>
 <body>
@@ -100,28 +100,25 @@
 </div>
 
 <script>
-// GitHub Pages 用 basePath
-const basePath = "images/";
+// ここを自分の GitHub リポジトリ名に置き換える
+const basePath = "/mathquiz/images/";
 
-// クイズ一覧
+// クイズ配列
 const quiz = [
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">経験に先立つ感性の形式は何か？`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">現象を統一して経験を可能にする概念群は？`, a: "50" },
-  { qHTML: `以下のカントの文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600" style="display:block; margin:10px 0;">理性が自らの限界を完全に理解することは可能か？`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz1.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}quiz2.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz3.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}quiz4.png" width="200" style="display:block; margin:10px 0;">`, a: "50" },
+  { qHTML: `以下の文章を読み、問いに答えよ。<br>
+            <img src="${basePath}quiz5.png" style="display:block; margin:10px 0;" width="600">
+            理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
+  { qHTML: `以下の文章を読み、問いに答えよ。<br>
+            <img src="${basePath}quiz5.png" style="display:block; margin:10px 0;" width="600">
+            経験に先立つ感性の形式は何か？`, a: "50" },
+  { qHTML: `lとmは平行である。以下のxを求めよ。<br>
+            <img src="${basePath}quiz1.png" style="display:block; margin:10px 0;" width="200">`, a: "50" },
   { qHTML: "ギリギリの時間に鬼が食べそうなものは何？", a: "おにぎり" },
-  { qHTML: "豚が寝る場所はどこ？", a: "3" },
-  { qHTML: "あっという間に10歳になったらどんな動物になりそう？", a: "猛獣" },
-  { qHTML: "事故があると震えてしまう植物ってなんだ？", a: "解答なし" },
+  { qHTML: "豚が寝る場所はどこ？", a: "3" }
 ];
 
 let current = 0;
 let attributionLog = [];
-let feelingLog = [];
 
 // クイズ表示
 function showQuestion() {
@@ -196,7 +193,24 @@ canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("mouseup", endDraw);
 canvas.addEventListener("mouseout", endDraw);
-canvas.addEventListener("touchstart", function(e){
+
+canvas.addEventListener("touchstart", e=>{
   e.preventDefault();
   const touch = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent("mousedown", {clientX: touch.clientX, clientY: touch.client
+  canvas.dispatchEvent(new MouseEvent("mousedown",{clientX:touch.clientX, clientY:touch.clientY}));
+},{passive:false});
+canvas.addEventListener("touchmove", e=>{
+  e.preventDefault();
+  const touch = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent("mousemove",{clientX:touch.clientX, clientY:touch.clientY}));
+},{passive:false});
+canvas.addEventListener("touchend", e=>{
+  e.preventDefault();
+  canvas.dispatchEvent(new MouseEvent("mouseup",{}));
+});
+
+// 初期表示
+showQuestion();
+</script>
+</body>
+</html>
