@@ -33,7 +33,7 @@
     background: #fff;
     touch-action: none;
     width: 100%;
-    height: 250px; /* iPad縦画面で描きやすい高さ */
+    height: 250px;
   }
   button {
     margin: 10px 5px 0;
@@ -45,50 +45,27 @@
     font-size: 16px;
     cursor: pointer;
   }
-  button:hover {
-    background-color: #5a9bd4;
-  }
-  #attribution {
-    margin-top: 20px;
-    display: none;
-    flex-direction: column;
-  }
-  #attribution button {
-    background-color: white;
-    color: #333;
-    border: 1px solid #ccc;
-    margin: 5px 0;
-  }
-  #attribution button:hover {
-    background-color: #f0f0f0;
-  }
-  #download, #thankMessage, #timerDisplay {
-    margin-top: 20px;
-  }
-  label {
-    margin-top: 15px;
-    display: block;
-    text-align: left;
-    font-weight: bold;
-  }
+  button:hover { background-color: #5a9bd4; }
+  #attribution { margin-top: 20px; display: none; flex-direction: column; }
+  #attribution button { background-color: white; color: #333; border: 1px solid #ccc; margin: 5px 0; }
+  #attribution button:hover { background-color: #f0f0f0; }
+  #download, #thankMessage, #timerDisplay { margin-top: 20px; }
+  label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
   #feelingPopup {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     z-index: 9999;
     text-align: center;
     width: 80%;
     max-width: 500px;
   }
-  #feelingPopup input[type=range] {
-    width: 100%;
-  }
+  #feelingPopup input[type=range] { width: 100%; }
 </style>
 </head>
 <body>
@@ -129,25 +106,17 @@
 </div>
 
 <script>
+// GitHub Pages 用に basePath を定義（images フォルダが同階層にある場合）
+const basePath = "images/";
 
-
-// ここから絶対パス化したクイズ一覧
+// クイズ一覧
 const quiz = [
-    { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="images/quiz5.png" width="600"> 理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
-  { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="${basePath}images/quiz5.png" width="600"> 経験に先立つ感性の形式は何か？`, a: "50" },
-  { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="${basePath}images/quiz5.png" width="600"> 現象を統一して経験を可能にする概念群は？`, a: "50" },
-  { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="${basePath}images/quiz5.png" width="600"> 理性が自らの限界を完全に理解することは可能か？`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}images/quiz1.png" width="200">`, a: "50" },
-  { qHTML: `lとmは平行である。以下のxを求めよ。<br><img src="${basePath}images/quiz2.png" width="200">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}images/quiz3.png" width="200">`, a: "50" },
-  { qHTML: `以下のxを求めよ。<br><img src="${basePath}images/quiz4.png" width="200">`, a: "50" },
-  { qHTML: "ギリギリの時間に鬼が食べそうなものは何？", a: "おにぎり" },
-  { qHTML: "豚が寝る場所はどこ？", a: "3" },
-  { qHTML: "あっという間に10歳になったらどんな動物になりそう？", a: "猛獣" },
-  { qHTML: "事故があると震えてしまう植物ってなんだ？", a: "解答なし" },
+  { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="${basePath}quiz5.png" width="600"> 理性による「対象から主体への転回」をカントは何と呼んだか。`, a: "50" },
+  { qHTML: `以下の文章を読み、問いに答えよ。<br><img src="${basePath}quiz1.png" width="200"> lとmは平行である。以下のxを求めよ。`, a: "50" },
+  { qHTML: `ギリギリの時間に鬼が食べそうなものは何？`, a: "おにぎり" }
 ];
 
-
+// 変数
 let current = 0;
 let attributionLog = [];
 let feelingLog = [];
@@ -167,11 +136,7 @@ function showQuestion() {
 function submitAnswer() {
   const time = new Date().toLocaleString();
   const answerValue = document.getElementById("answer").value;
-  attributionLog.push({
-    question: quiz[current].qHTML,
-    attribution: answerValue,
-    timestamp: time
-  });
+  attributionLog.push({ question: quiz[current].qHTML, attribution: answerValue, timestamp: time });
   current++;
   showQuestion();
 }
@@ -189,8 +154,6 @@ function selectAttribution(reason) {
 function showDownloadLink() {
   const rows = [["問題", "回答/帰属理由", "時間"]];
   attributionLog.forEach(entry => rows.push([entry.question.replace(/<[^>]+>/g,""), entry.attribution, entry.timestamp]));
-  rows.push(["タイミング", "気分スライダー値"]);
-  feelingLog.forEach(entry => rows.push([entry.timestamp, entry.value]));
   const csvContent = rows.map(r => r.join(",")).join("\n");
   const blob = new Blob(["\uFEFF" + csvContent], {type:"text/csv;charset=utf-8;"});
   const link = document.createElement("a");
@@ -216,7 +179,6 @@ canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("mouseup", endDraw);
 canvas.addEventListener("mouseout", endDraw);
-
 canvas.addEventListener("touchstart", function(e){
   e.preventDefault();
   const touch = e.touches[0];
