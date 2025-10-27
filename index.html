@@ -59,7 +59,8 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
   width: 80%;
   max-width: 500px;
 }
-#feelingPopup input[type=range] { width: 100%; }
+#feelingPopup input[type=range] {
+  width: 100%; }
 </style>
 </head>
 <body>
@@ -122,7 +123,9 @@ const quiz = [
 
 let current = 0;
 let attributionLog = [];
-
+let feelingLog = [];
+let timer;
+  
 // クイズ表示
 function showQuestion() {
   if(current >= quiz.length) return;
