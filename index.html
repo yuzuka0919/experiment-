@@ -60,17 +60,12 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
   max-width: 500px;
 }
 #feelingPopup input[type=range] { width: 100%; }
-#countdownInPopup {
-  font-weight: bold;
-  color: #cc0000;
-  margin-top: 8px;
-}
 </style>
 </head>
 <body>
 <div class="card">
   <h2 id="question">読み込み中...</h2>
-  <div id="timerDisplay">残り時間: 10:00</div>
+  <div id="timerDisplay">残り時間: 600 秒</div>
 
   <label for="memoCanvas">🖊 メモ欄（手書き）</label>
   <canvas id="memoCanvas"></canvas><br>
@@ -84,10 +79,10 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 
   <div id="attribution">
     <p>なぜ諦めたと思いますか？</p>
-    <button onclick="selectAttribution('努力不足')">努力不足</button>
-    <button onclick="selectAttribution('能力がない')">能力がない</button>
-    <button onclick="selectAttribution('運が悪かった')">運が悪かった</button>
-    <button onclick="selectAttribution('問題が難しすぎた')">問題が難しすぎた</button>
+    <button onclick="selectAttribution('努力帰属')">努力不足</button>
+    <button onclick="selectAttribution('能力帰属')">能力がない</button>
+    <button onclick="selectAttribution('運帰属')">運が悪かった</button>
+    <button onclick="selectAttribution('課題の困難さ帰属')">問題が難しすぎた</button>
   </div>
 
   <p id="thankMessage" style="font-weight:bold;color:#333;"></p>
@@ -99,12 +94,9 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
   <input type="range" id="feelingSlider" min="0" max="100" step="1">
   <br><span style="float:left">解けそう</span>
   <span style="float:right">解けなそう</span>
-  <div id="countdownInPopup">閉じるまで: 7 秒</div>
-  <br>
+  <br><br>
   <button onclick="closeFeelingPopup()">OK</button>
 </div>
-
-<script>
 
 <script>
 // ---------------------
@@ -125,15 +117,13 @@ const quiz = [
   { qHTML: "事故があると震えてしまう植物ってなんだ？", a: "解答なし" },
 ];
 
-
 let current = 0;
 let attributionLog = [];
 let feelingLog = [];
 let timer;
-let feelingTimer;
 
 // ---------------------
-// 問題表示
+// クイズ表示
 // ---------------------
 function showQuestion() {
   if (current >= quiz.length) {
@@ -144,60 +134,75 @@ function showQuestion() {
     clearCanvas();
     document.getElementById("attribution").style.display = "none";
     document.getElementById("thankMessage").innerText = "";
+
+    document.getElementById("answer").style.display = "block";
+    document.getElementById("memoCanvas").style.display = "block";
+    document.querySelector("label").style.display = "block";
+    document.querySelector("button[onclick='clearCanvas()']").style.display = "inline-block";
+    document.getElementById("submitBtn").style.display = "inline-block";
+    document.getElementById("giveUpBtn").style.display = "inline-block";
   }
 }
 
 // ---------------------
-// 解答ボタン
+// 解答
 // ---------------------
 function submitAnswer() {
   const answer = document.getElementById("answer").value;
   const time = new Date().toLocaleString();
-  attributionLog.push({ question: quiz[current].qHTML, attribution: answer, timestamp: time });
+  attributionLog.push({
+    question: quiz[current].qHTML,
+    attribution: answer,
+    timestamp: time
+  });
   current++;
   showQuestion();
 }
 
 // ---------------------
-// 諦め選択
+// 諦め
 // ---------------------
 function showAttributionOptions() {
   document.getElementById("attribution").style.display = "flex";
 }
+
 function selectAttribution(reason) {
   const time = new Date().toLocaleString();
-  attributionLog.push({ question: quiz[current].qHTML, attribution: reason, timestamp: time });
+  attributionLog.push({
+    question: quiz[current].qHTML,
+    attribution: reason,
+    timestamp: time
+  });
   current++;
   showQuestion();
 }
 
 // ---------------------
-// CSV作成（見やすく整形）
+// CSVダウンロード
 // ---------------------
 function showDownloadLink() {
-  let csv = "【問題回答ログ】\n";
-  attributionLog.forEach((entry, i) => {
-    csv += `\n--- 問題 ${i + 1} ---\n`;
-    csv += `問題文:\n${entry.question.replace(/<[^>]*>/g, '')}\n`;
-    csv += `帰属理由: ${entry.attribution}\n`;
-    csv += `回答時刻: ${entry.timestamp}\n`;
-  });
+  const rows = [["問題", "帰属理由", "時間"]];
+  attributionLog.forEach(entry => rows.push([entry.question, entry.attribution, entry.timestamp]));
+  rows.push(["", "", ""]);
+  rows.push(["タイミング", "気分スライダー値"]);
+  feelingLog.forEach(entry => rows.push([entry.timestamp, entry.value]));
 
-  csv += "\n\n【気分ログ】\n";
-  feelingLog.forEach((entry, i) => {
-    csv += `(${i + 1}) ${entry.timestamp} → スライダー値: ${entry.value}\n`;
-  });
-
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const csvContent = rows.map(row => row.join(",")).join("\n");
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
   link.href = url;
   link.download = "experiment_log.csv";
-  link.innerText = "CSVをダウンロード";
+  link.innerText = "帰属理由をCSVでダウンロード";
   link.style.display = "inline-block";
   link.style.marginTop = "10px";
-  document.getElementById("download").innerHTML = "";
-  document.getElementById("download").appendChild(link);
+  link.style.fontWeight = "bold";
+
+  const container = document.getElementById("download");
+  container.innerHTML = "";
+  container.appendChild(link);
 }
 
 // ---------------------
@@ -205,9 +210,9 @@ function showDownloadLink() {
 // ---------------------
 const canvas = document.getElementById("memoCanvas");
 const ctx = canvas.getContext("2d");
+let drawing = false;
 canvas.width = canvas.offsetWidth;
 canvas.height = 250;
-let drawing = false;
 
 function getMousePos(evt){
   const rect = canvas.getBoundingClientRect();
@@ -223,27 +228,32 @@ function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
 ["mousedown","mousemove","mouseup","mouseout"].forEach(e=>{
   canvas.addEventListener(e, window[e==="mousedown"? "startDraw": e==="mousemove"? "draw": "endDraw"]);
 });
+canvas.addEventListener("touchstart", e=>{
+  e.preventDefault();
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent("mousedown",{clientX:t.clientX, clientY:t.clientY}));
+},{passive:false});
+canvas.addEventListener("touchmove", e=>{
+  e.preventDefault();
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent("mousemove",{clientX:t.clientX, clientY:t.clientY}));
+},{passive:false});
+canvas.addEventListener("touchend", e=>{
+  canvas.dispatchEvent(new MouseEvent("mouseup"));
+},{passive:false});
 
 // ---------------------
-// Feelingポップアップ
+// 気分ポップアップ
 // ---------------------
 function openFeelingPopup() {
   const popup = document.getElementById("feelingPopup");
   popup.style.display = "block";
-  let countdown = 7;
-  document.getElementById("countdownInPopup").innerText = `閉じるまで: ${countdown} 秒`;
-
-  feelingTimer = setInterval(() => {
-    countdown--;
-    document.getElementById("countdownInPopup").innerText = `閉じるまで: ${countdown} 秒`;
-    if (countdown <= 0) closeFeelingPopup();
-  }, 1000);
+  setTimeout(closeFeelingPopup, 7000);
 }
 
 function closeFeelingPopup() {
-  clearInterval(feelingTimer);
   const popup = document.getElementById("feelingPopup");
-  if (popup.style.display === "none") return;
+  if(popup.style.display==="none") return;
   const value = document.getElementById("feelingSlider").value;
   const timestamp = new Date().toLocaleString();
   feelingLog.push({ timestamp, value });
@@ -251,38 +261,35 @@ function closeFeelingPopup() {
 }
 
 // ---------------------
-// 残り時間10:00 → 0:00
+// タイマー
 // ---------------------
 function startTimer() {
-  let totalSeconds = 600;
+  let timeLeft = 600; // 10分
   const timerDisplay = document.getElementById("timerDisplay");
-
   timer = setInterval(() => {
-    totalSeconds--;
-    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-    const seconds = String(totalSeconds % 60).padStart(2, '0');
-    timerDisplay.innerText = `残り時間: ${minutes}:${seconds}`;
-
-    if (totalSeconds <= 0) {
+    timeLeft--;
+    timerDisplay.innerText = `残り時間: ${timeLeft}秒`;
+    if (timeLeft <= 0) {
       clearInterval(timer);
       endExperiment();
     }
-  }, 1000);
+  }, 2000);
 }
 
 // ---------------------
-// 終了
+// 終了処理
 // ---------------------
 function endExperiment() {
-  clearInterval(timer);
+  current = quiz.length;
   document.getElementById("question").innerText = "すべての問題が終わりました！";
   document.getElementById("answer").style.display = "none";
   document.getElementById("memoCanvas").style.display = "none";
   document.querySelector("label").style.display = "none";
+  document.querySelector("button[onclick='clearCanvas()']").style.display = "none";
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("giveUpBtn").style.display = "none";
   document.getElementById("attribution").style.display = "none";
-  document.getElementById("thankMessage").innerText = "実験にご協力いただきありがとうございました。";
+  document.getElementById("thankMessage").innerText = "実験にご協力いただきありがとうございました";
   document.getElementById("timerDisplay").style.display = "none";
   showDownloadLink();
 }
