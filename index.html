@@ -103,8 +103,8 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 // クイズ
 // ---------------------
 const quiz = [
-  { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add3.jpg' style='display:block; margin:10px 0;' width='200'>", a: "50" },
-  { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add4.jpg' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add3.jpg' style='display:block; margin:10px 0;' width='200'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add4.jpg' style='display:block; margin:10px 0;' width='200'>", a: "50" },
   { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add1.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
   { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add2.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
 ];
@@ -256,7 +256,7 @@ function closeFeelingPopup() {
 // タイマー
 // ---------------------
 function startTimer() {
-  let timeLeft = 600; // 10分
+  let timeLeft = 300; // 10分
   const timerDisplay = document.getElementById("timerDisplay");
   timer = setInterval(() => {
     timeLeft--;
