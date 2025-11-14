@@ -253,22 +253,6 @@ function closeFeelingPopup() {
 }
 
 // ---------------------
-// タイマー
-// ---------------------
-function startTimer() {
-  let timeLeft = 300; // 5分
-  const timerDisplay = document.getElementById("timerDisplay");
-  timer = setInterval(() => {
-    timeLeft--;
-    timerDisplay.innerText = `残り時間: ${timeLeft}秒`;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      endExperiment();
-    }
-  }, 1000);
-}
-
-// ---------------------
 // 終了処理
 // ---------------------
 function endExperiment() {
@@ -282,7 +266,6 @@ function endExperiment() {
   document.getElementById("giveUpBtn").style.display = "none";
   document.getElementById("attribution").style.display = "none";
   document.getElementById("thankMessage").innerText = "実験にご協力いただきありがとうございました";
-  document.getElementById("timerDisplay").style.display = "none";
   showDownloadLink();
 }
 
@@ -290,7 +273,6 @@ function endExperiment() {
 // 初期化
 // ---------------------
 showQuestion();
-startTimer();
 setInterval(openFeelingPopup, 20000);
 </script>
 </body>
