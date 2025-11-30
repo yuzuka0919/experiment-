@@ -78,10 +78,10 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 
   <div id="attribution">
     <p>なぜ諦めたと思いますか？</p>
-    <button onclick="selectAttribution('努力帰属')">努力不足</button>
-    <button onclick="selectAttribution('能力帰属')">能力がない</button>
-    <button onclick="selectAttribution('運帰属')">運が悪かった</button>
-    <button onclick="selectAttribution('課題の困難さ帰属')">問題が難しすぎた</button>
+    <button onclick="selectAttribution('努力帰属')">今までの勉強が足りなかった。努力不足だ。</button>
+    <button onclick="selectAttribution('能力帰属')">このような問題は苦手だ。自分には向いていない。</button>
+    <button onclick="selectAttribution('運帰属')">運が悪かった。他の問題だったら解けるだろう。</button>
+    <button onclick="selectAttribution('課題の困難さ帰属')">問題が難しすぎる。こんな問題誰にも解けない。</button>
   </div>
 
   <p id="thankMessage" style="font-weight:bold;color:#333;"></p>
@@ -102,14 +102,12 @@ label { margin-top: 15px; display: block; text-align: left; font-weight: bold; }
 // クイズ
 // ---------------------
 const quiz = [
-  { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz1.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
   { qHTML: "lとmは平行である。以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz2.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
-  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz3.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
-  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz4.png' style='display:block; margin:10px 0;' width='200'>", a: "50" },
-  { qHTML: "以下のアを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add1.jpg' style='display:block; margin:10px 0;' width='400'>", a: "50" },
-  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add2.jpg' style='display:block; margin:10px 0;' width='300'>", a: "50" },
-  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add3.png' style='display:block; margin:10px 0;' width='300'>", a: "50" },
-  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add4.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz3.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/quiz4.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
+  { qHTML: "以下のアを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add3.png' style='display:block; margin:10px 0;' width='400'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add1.jpg' style='display:block; margin:10px 0;' width='400'>", a: "50" },
+  { qHTML: "以下のxを求めよ。<br><img src='https://yuzuka0919.github.io/experiment-/images/add8.jpg' style='display:block; margin:10px 0;' width='300'>", a: "50" },
 ];
 
 let current = 0;
