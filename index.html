@@ -199,41 +199,41 @@ function showDownloadLink() {
 }
 
 // ---------------------
-// Canvas
+// Canvas（iPad対応版）
 // ---------------------
 const canvas = document.getElementById("memoCanvas");
 const ctx = canvas.getContext("2d");
 let drawing = false;
+
 canvas.width = canvas.offsetWidth;
 canvas.height = 250;
 
-function getMousePos(evt){
+// ポインターイベントの取得
+canvas.addEventListener("pointerdown", e => {
+  drawing = true;
   const rect = canvas.getBoundingClientRect();
-  let x = evt.touches ? evt.touches[0].clientX - rect.left : evt.clientX - rect.left;
-  let y = evt.touches ? evt.touches[0].clientY - rect.top : evt.clientY - rect.top;
-  return {x,y};
-}
-function startDraw(evt){ drawing=true; const p=getMousePos(evt); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
-function draw(evt){ if(!drawing) return; const p=getMousePos(evt); ctx.lineTo(p.x,p.y); ctx.stroke(); }
-function endDraw(){ drawing=false; }
-function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
-
-["mousedown","mousemove","mouseup","mouseout"].forEach(e=>{
-  canvas.addEventListener(e, window[e==="mousedown"? "startDraw": e==="mousemove"? "draw": "endDraw"]);
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
 });
-canvas.addEventListener("touchstart", e=>{
-  e.preventDefault();
-  const t = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent("mousedown",{clientX:t.clientX, clientY:t.clientY}));
-},{passive:false});
-canvas.addEventListener("touchmove", e=>{
-  e.preventDefault();
-  const t = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent("mousemove",{clientX:t.clientX, clientY:t.clientY}));
-},{passive:false});
-canvas.addEventListener("touchend", e=>{
-  canvas.dispatchEvent(new MouseEvent("mouseup"));
-},{passive:false});
+
+canvas.addEventListener("pointermove", e => {
+  if (!drawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+});
+
+canvas.addEventListener("pointerup", () => drawing = false);
+canvas.addEventListener("pointercancel", () => drawing = false);
+
+function clearCanvas(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 
 // ---------------------
 // 気分ポップアップ
